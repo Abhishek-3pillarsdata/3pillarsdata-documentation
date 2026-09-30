@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "id": "agentic-sdlc",
+    "key": "SDLC",
+    "name": "Agentic SDLC Factory",
+    "description": "A multi-agent pipeline that turns a written specification or a GitHub issue into tested, reviewed code. Eleven Claude agents share a single state file; a person approves the plan before anything is written, and every gate can block the result.",
+    "objectives": [
+      "Turn a specification into a tested, reviewed application without a developer writing the first draft",
+      "Keep a person in control — every plan is approved before code is written, and every gate can block a release",
+      "Work on repositories that already exist: read an issue, plan a change, open a pull request",
+      "Have the agents verify their own work rather than handing over code nobody has run"
+    ],
+    "status": "active",
+    "progress": 0,
+    "owner": "abhishek",
+    "techStack": [
+      "Python 3.10+",
+      "Anthropic Claude API",
+      "Click",
+      "Rich",
+      "Pydantic",
+      "httpx",
+      "PyYAML",
+      "pytest",
+      "Docker",
+      "GitHub REST API"
+    ],
+    "startDate": "2026-06-23",
+    "lastUpdated": "2026-09-30",
+    "repository": "https://github.com/devops-internal-3pillarsdata/agentic-sdlc.git"
+  }
+]

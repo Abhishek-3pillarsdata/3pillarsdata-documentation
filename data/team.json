@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "id": "abhishek",
+    "name": "Abhishek Hiremath",
+    "role": "Developer",
+    "email": "abhishek@3pillarsdata.com",
+    "focus": "Agentic SDLC Factory — multi-agent pipeline, agent tooling, review gates"
+  }
+]

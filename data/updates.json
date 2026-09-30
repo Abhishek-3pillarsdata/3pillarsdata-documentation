@@ -1,1 +1,59 @@
-[]
+[
+  {
+    "id": "2026-09-30-sdlc-abhishek",
+    "projectId": "agentic-sdlc",
+    "date": "2026-09-30",
+    "developer": "abhishek",
+    "summary": "Baseline documentation of the existing codebase, after completing the agentic phase",
+    "changes": [
+      "Documented the project: sixteen existing features, the blackboard architecture, setup and configuration, and the full git history since the project started on 2026-06-23",
+      "Added read-only tools — read a file, list a directory, search the code, plus web search — to seven agents through a single can_look flag",
+      "Added a write–test–fix loop to the Coder: it writes files, runs the project's own test suite, reads the failure and corrects it inside one stage",
+      "Confined writing to the paths the approved file plan named, and made run_tests take no command so it cannot become a general shell",
+      "Added plan editing in the browser, which clears the approval so an edited plan must be read again (SDLC-5)",
+      "Added a check refusing a plan that names a file which does not exist, re-asking once before refusing the run (SDLC-6)",
+      "Fixed the Architect being told to add a Dockerfile and README on every run — inside a repository the file plan is now a diff, not an inventory",
+      "Fixed to_pdf reporting success when it had rendered nothing (SDLC-ISSUE-1)",
+      "Rewrote the status and roadmap papers to describe what exists rather than what was proposed"
+    ],
+    "filesAffected": [
+      "sdlc/tools/agent_tools.py",
+      "sdlc/agents/base.py",
+      "sdlc/agents/coder.py",
+      "sdlc/agents/architect.py",
+      "sdlc/agents/reviewer.py",
+      "sdlc/intake.py",
+      "sdlc/plan_review.py",
+      "sdlc/dashboard.py",
+      "sdlc/report.py",
+      "sdlc/prompts/architect.md",
+      "tests/test_agent_tools.py",
+      "tests/test_agent_loop.py",
+      "tests/test_agents_can_look.py",
+      "tests/test_plan_editing.py",
+      "tests/test_plan_contradictions.py",
+      "docs/factory-roadmap.html",
+      "docs/factory-status.html",
+      "docs/agentic-handover.md"
+    ],
+    "problems": [
+      "Every significant failure in live use came from agents being unable to open a file, not from poor prompting — a build system invented because Gradle could not be seen, a file planned because a directory could not be listed",
+      "A live run revealed the Architect was being instructed to include a Dockerfile and README on every run, so a request to restyle one screen planned ten files",
+      "A correct no-op was failing runs: given an already-passing file the Coder changed nothing, and the code reported that as producing nothing",
+      "Regenerating the two papers appeared to work and did nothing, because the PDF renderer only checked that the output file existed"
+    ],
+    "solutions": [
+      "Two tiers of tooling: reading is available to any agent that opts in and can change nothing; writing and running tests belong to the Coder alone and are confined to the approved plan",
+      "Inside a repository the file plan is now stated to be a diff rather than an inventory, in both the prompt file and the user turn",
+      "A no-op backed by a green test suite is accepted as a result; nothing written with a red suite still fails the run",
+      "The renderer compares modification times and resolves the output path, with tests covering both"
+    ],
+    "nextSteps": [
+      "Decide whether the Coder should be allowed to run a linter and a build behind an allowlist (SDLC-17)",
+      "Run a milestone build against the live API — the largest untested surface in the factory (SDLC-18)",
+      "Add an Android emulator and a macOS runner so mobile work can verify itself (SDLC-19)",
+      "Update README.md, which still describes six agents (SDLC-ISSUE-3)"
+    ],
+    "relatedTasks": ["SDLC-3", "SDLC-4", "SDLC-5", "SDLC-6"]
+  }
+]
