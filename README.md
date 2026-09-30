@@ -208,6 +208,16 @@ writes into it. When the portal's copy of the skill changes, the skill re-instal
 | Pause one repo | Tell Claude "stop auto-documenting this repo" (and "resume" later) |
 | Remove everything | `npm run install-skill -- --uninstall` |
 
+**If automatic pushes fail with "could not read Password":** Claude can't answer a login prompt, so Git needs a saved
+login. Run this once in your own terminal: `git credential-manager github login --username <your-github-user>`. If
+you've run `gh auth setup-git` before, your global config sends github.com logins to the GitHub CLI instead. To make
+just this clone use the saved login:
+
+```bash
+git config --local credential.https://github.com.helper ""
+git config --local --add credential.https://github.com.helper manager
+```
+
 ## Manual updates from this repo
 
 `CLAUDE.md` holds the full procedure, and Claude Code reads it automatically. After a development session, open this
