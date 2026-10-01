@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router'
-import { BookOpen, CalendarDays, FolderKanban, LayoutDashboard, Users, X } from 'lucide-react'
+import { BookOpen, CalendarDays, FolderKanban, LayoutDashboard, ListChecks, Users, X } from 'lucide-react'
 import { projects } from '../../data'
 import { projectStatusMeta } from '../ui/Badge'
 import { cn } from '../../utils/format'
@@ -7,6 +7,7 @@ import { cn } from '../../utils/format'
 const nav = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/projects', label: 'Projects', icon: FolderKanban, end: true },
+  { to: '/tasks', label: 'Tasks', icon: ListChecks },
   { to: '/meetings', label: 'Meeting notes', icon: CalendarDays },
   { to: '/team', label: 'Team', icon: Users },
 ]

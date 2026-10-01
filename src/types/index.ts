@@ -2,8 +2,8 @@
  * Data model for the documentation portal.
  *
  * The portal describes each project as it is *now*: what it is, what works, how it is built.
- * There is deliberately no task tracking, changelog or date history. Meeting notes are the
- * only dated content, and they are added by hand.
+ * There is deliberately no changelog or date history. Tasks and meeting notes are added by
+ * people (developers via /add-this, admins by editing tasks.md on GitHub), never automatically.
  */
 
 export type ProjectStatus = 'planning' | 'active' | 'on-hold' | 'completed'
@@ -32,6 +32,19 @@ export interface Project {
   techStack: string[]
   /** Git remote URL of the code repo; links developers' local repos to this project. */
   repository?: string
+}
+
+export type TaskStatus = 'todo' | 'in-progress' | 'blocked' | 'done'
+
+/** One bullet in docs/projects/<id>/tasks.md: `- Title (person) — note` under a status heading. */
+export interface Task {
+  projectId: string
+  title: string
+  status: TaskStatus
+  /** TeamMember id or free-text name, from the trailing `(person)`. */
+  person?: string
+  /** Text after ` — `, e.g. why it is blocked. */
+  note?: string
 }
 
 export interface ActionItem {

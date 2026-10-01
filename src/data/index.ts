@@ -3,6 +3,7 @@
  *
  *   /data/projects.json, /data/team.json                     → structured data
  *   /docs/projects/<id>/{overview,architecture,technical}.md → project pages
+ *   /docs/projects/<id>/tasks.md                             → tasks (added by people, see utils/tasks.ts)
  *   /docs/projects/<id>/meetings/*.md                        → meeting notes
  *
  * There is nothing to register here when adding content: new files matching
@@ -10,10 +11,12 @@
  */
 import projectsJson from '../../data/projects.json'
 import teamJson from '../../data/team.json'
-import type { DocKind, Meeting, Project, ProjectDoc, TeamMember } from '../types'
+import type { DocKind, Meeting, Project, ProjectDoc, Task, TeamMember } from '../types'
 import { getActionItems, getBullets, getSection, parseFrontmatter, stripInline } from '../utils/markdown'
+import { parseTasks, tasksTemplate } from '../utils/tasks'
 
 const docFiles = import.meta.glob('/docs/projects/*/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
+const taskFiles = import.meta.glob('/docs/projects/*/tasks.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
 const meetingFiles = import.meta.glob('/docs/projects/*/meetings/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
 
 const docKinds: DocKind[] = ['overview', 'architecture', 'technical']
@@ -29,6 +32,10 @@ for (const [path, raw] of Object.entries(docFiles)) {
   if (!m || !docKinds.includes(m[2] as DocKind)) continue
   docs.push({ projectId: m[1], kind: m[2] as DocKind, body: parseFrontmatter(raw).body })
 }
+
+// ── Tasks ────────────────────────────────────────────────────────────────────
+export const tasks: Task[] = Object.entries(taskFiles).flatMap(([path, raw]) => parseTasks(/\/docs\/projects\/([^/]+)\//.exec(path)![1], raw))
+const hasTaskFile = (projectId: string) => `/docs/projects/${projectId}/tasks.md` in taskFiles
 
 // ── Meetings ─────────────────────────────────────────────────────────────────
 export const meetings: Meeting[] = Object.entries(meetingFiles)
@@ -57,6 +64,19 @@ export const getProject = (id: string) => projects.find((p) => p.id === id)
 export const getDoc = (projectId: string, kind: DocKind) => docs.find((d) => d.projectId === projectId && d.kind === kind)
 export const getMeeting = (projectId: string, slug: string) => meetings.find((m) => m.projectId === projectId && m.slug === slug)
 export const meetingsFor = (projectId: string) => meetings.filter((m) => m.projectId === projectId)
+export const tasksFor = (projectId: string) => tasks.filter((t) => t.projectId === projectId)
+
+/**
+ * GitHub page where anyone with write access (e.g. an admin) can edit a project's task list in the
+ * browser. Opens the "create file" page, pre-filled, if the project has no tasks.md yet.
+ */
+export function editTasksUrl(projectId: string): string | undefined {
+  if (!__PORTAL_REPO__) return undefined
+  const dir = `docs/projects/${projectId}`
+  return hasTaskFile(projectId)
+    ? `${__PORTAL_REPO__}/edit/${__PORTAL_BRANCH__}/${dir}/tasks.md`
+    : `${__PORTAL_REPO__}/new/${__PORTAL_BRANCH__}/${dir}?filename=tasks.md&value=${encodeURIComponent(tasksTemplate)}`
+}
 
 /** Resolves a team id to a member; free-text names produce a placeholder member. */
 export function getMember(idOrName: string): TeamMember {

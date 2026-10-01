@@ -4,7 +4,8 @@
  * Run with `npm run validate` (also runs automatically before `npm run build`).
  *
  * Checks: JSON parses, required fields, allowed values, unique ids, that every project
- * owner exists in team.json, that each project has its docs folder, and meeting note format.
+ * owner exists in team.json, that each project has its docs folder, the tasks.md layout,
+ * and meeting note format.
  */
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
@@ -84,6 +85,26 @@ for (const p of projects) {
   }
   for (const f of ['overview.md', 'architecture.md', 'technical.md']) {
     if (!existsSync(join(dir, f))) warn(`docs/projects/${p.id}`, `missing ${f}`)
+  }
+
+  // tasks.md: bullets under "## To do / In progress / Blocked / Done" (matched loosely, like the site)
+  const tasksPath = join(dir, 'tasks.md')
+  if (existsSync(tasksPath)) {
+    const rel = `docs/projects/${p.id}/tasks.md`
+    const known = /^(to ?do|backlog|pending|not started|planned|in progress|doing|ongoing|wip|working on|blocked|on hold|waiting|stuck|done|completed?|finished)$/
+    let inKnown = null
+    readFileSync(tasksPath, 'utf8').split(/\r?\n/).forEach((line, i) => {
+      const h = /^#{1,6}\s+(.+)$/.exec(line.trim())
+      if (h) {
+        const name = h[1].toLowerCase().replace(/[^a-z ]/g, ' ').replace(/\s+/g, ' ').trim()
+        inKnown = known.test(name)
+        if (!inKnown) warn(`${rel}:${i + 1}`, `heading "${h[1]}" is not one of To do / In progress / Blocked / Done; its tasks won't show`)
+      } else if (/^\s*[-*+]\s+\S/.test(line) && inKnown === null) {
+        warn(`${rel}:${i + 1}`, 'task is above the first heading, so it won\'t show; move it under "## To do" (or another heading)')
+      }
+    })
+  } else {
+    warn(`docs/projects/${p.id}`, 'missing tasks.md (copy docs/_templates/project/tasks.md)')
   }
 
   const mDir = join(dir, 'meetings')

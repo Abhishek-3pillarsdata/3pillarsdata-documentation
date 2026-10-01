@@ -7,9 +7,10 @@ Almost every request is a content edit. Do **not** change `src/` unless you are 
 ## What the portal is for
 
 Each project is described **as it is right now**: what it is, its current features, its current status, how it is
-built and how to run it. The team deliberately does **not** want tasks, issues or blockers lists, changelogs, session
-logs, progress percentages, or dates and times on the site. Don't add them back. The only dated content is meeting
-notes, which the team writes by hand.
+built and how to run it. Tasks and meeting notes are added **by people only**: developers via `/add-this task: …`,
+admins by editing `tasks.md` on GitHub. Never generate tasks automatically. The team deliberately does **not** want
+issues lists, changelogs, session logs, progress percentages, or dates and times on the site; don't add them back. The
+only dated content is meeting notes.
 
 ## Where things live
 
@@ -20,6 +21,7 @@ notes, which the team writes by hand.
 | Overview (what it is, `## Current features`, `## Current status`) | `docs/projects/<project-id>/overview.md` | Markdown |
 | Architecture | `docs/projects/<project-id>/architecture.md` | Markdown |
 | Technical docs (setup, configuration, APIs, integrations) | `docs/projects/<project-id>/technical.md` | Markdown |
+| Tasks (added by people) | `docs/projects/<project-id>/tasks.md` | Markdown list under `## To do` / `## In progress` / `## Blocked` / `## Done` |
 | Meeting notes | `docs/projects/<project-id>/meetings/YYYY-MM-DD[-slug].md` | Markdown + frontmatter |
 | Templates for new files | `docs/_templates/` | not rendered |
 
@@ -57,6 +59,13 @@ git push
 CI rebuilds and deploys the site automatically on push to `main`. Commit and push when the user asked for the update,
 or when you are running as the `add-this` skill with `autoPush` on.
 
+## Tasks
+
+`docs/projects/<id>/tasks.md` is a plain list, one line per task: `- <task> (<person>) — <note>`. The person and
+note are optional. Put each task under `## To do`, `## In progress`, `## Blocked` or `## Done`. No dates, ids or
+numbers. Admins edit it in the browser through the **Edit tasks** button on the site, which opens GitHub's editor. Keep
+their wording and order when you change the file. Only add, move or remove a task when someone explicitly asks.
+
 ## Adding meeting notes
 
 Copy `docs/_templates/meeting.md` to `docs/projects/<id>/meetings/YYYY-MM-DD.md` (the meeting's date, as the user
@@ -68,14 +77,15 @@ decisions and action items out of these sections.
 ## Adding a project
 
 Prefer `/add-this` from the project folder. To do it by hand: add an entry to `data/projects.json`, copy
-`docs/_templates/project/*` to `docs/projects/<new-id>/`, add `meetings/.gitkeep`, add the owner to `data/team.json`
-if new, and run `npm run validate`.
+`docs/_templates/project/*` (including the empty `tasks.md`) to `docs/projects/<new-id>/`, add `meetings/.gitkeep`,
+add the owner to `data/team.json` if new, and run `npm run validate`.
 
 ## The add-this skill
 
 `skill/add-this/` is a Claude Code skill that each developer installs globally with `npm run install-skill`. It runs
 **only when the developer types `/add-this`** (or explicitly asks to update the portal) in a project folder. The first
-time, it adds the project; after that, it refreshes the project's page. It never runs on its own.
+time, it adds the project; after that, it refreshes the project's page. `/add-this task: …` and
+`/add-this meeting notes: …` edit only the task list or the meeting notes. It never runs on its own.
 `scripts/install-skill.mjs` is the installer. When `skill/add-this/` changes, the skill notices after its next pull and
 re-installs itself.
 

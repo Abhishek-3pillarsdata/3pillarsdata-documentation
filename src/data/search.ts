@@ -1,7 +1,7 @@
-import { docs, getMember, getProject, meetings, projects } from '.'
+import { docs, getMember, getProject, meetings, projects, tasks } from '.'
 import { splitSections, stripInline } from '../utils/markdown'
 
-export type SearchType = 'project' | 'doc' | 'meeting'
+export type SearchType = 'project' | 'doc' | 'meeting' | 'task'
 
 export interface SearchItem {
   type: SearchType
@@ -43,6 +43,17 @@ function buildIndex(): SearchItem[] {
         url: `/projects/${d.projectId}${d.kind === 'overview' ? '' : `/${d.kind}`}${s.id ? `?h=${s.id}` : ''}`,
       })
     }
+  }
+
+  const taskStatusLabel = { todo: 'To do', 'in-progress': 'In progress', blocked: 'Blocked', done: 'Done' } as const
+  for (const t of tasks) {
+    items.push({
+      type: 'task',
+      title: t.title,
+      subtitle: [projectName(t.projectId), taskStatusLabel[t.status], t.person && getMember(t.person).name].filter(Boolean).join(' · '),
+      text: t.note ?? '',
+      url: `/projects/${t.projectId}/tasks`,
+    })
   }
 
   for (const m of meetings) {
@@ -111,4 +122,5 @@ export const searchTypeLabels: Record<SearchType, string> = {
   project: 'Project',
   doc: 'Documentation',
   meeting: 'Meeting',
+  task: 'Task',
 }

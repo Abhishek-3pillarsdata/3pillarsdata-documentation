@@ -1,12 +1,13 @@
 # Project Documentation Portal
 
 The team's site for **what each project is and where it stands right now**: what it does, its current features and
-status, how it's built and how to run it, plus the team's meeting notes.
+status, how it's built and how to run it, plus the team's **tasks** and **meeting notes**.
 
 **Site:** https://abhishek-3pillarsdata.github.io/3pillarsdata-documentation/
 
-All content is plain Markdown and JSON in this repo, and the website is a read-only view of it. There are no tasks,
-changelogs or dates to keep up to date; each project page simply describes the project as it is today.
+All content is plain Markdown and JSON in this repo, and the website is a read-only view of it. Each project page
+describes the project as it is today. There are no changelogs or dates to keep up to date, and tasks only appear when
+a person adds them.
 
 **Stack:** React 19, TypeScript, Vite, Tailwind CSS 4, react-markdown, React Router (hash routing). No backend.
 
@@ -27,8 +28,17 @@ Work on your project in Claude Code as usual. When you want the portal to reflec
 It publishes straight away and tells you in one line what it changed; the site updates about a minute later.
 **Nothing happens unless you type `/add-this`.** Saying "add this to the portal" works too.
 
-To add meeting notes, write them yourself (see [Meeting notes](#meeting-notes)), or paste them into Claude with
-`/add-this meeting notes: …`.
+The same command handles tasks and meeting notes, but only when you ask:
+
+| You type | What happens |
+| --- | --- |
+| `/add-this` | Refreshes the project page (features, status, architecture). Tasks are never touched. |
+| `/add-this task: Add PDF export` | Adds a task under **To do** |
+| `/add-this move "Add PDF export" to done` | Moves it to **Done** (also: in progress, blocked) |
+| `/add-this task blocked: Deploy to staging, waiting for server access` | Adds a blocked task with the reason |
+| `/add-this meeting notes: …` (paste rough notes) | Saves them as a meeting note: topics, decisions, action items |
+
+Admins can manage tasks without Claude; see [Tasks](#tasks).
 
 ### Install (each developer, once)
 
@@ -72,6 +82,7 @@ docs/projects/<project-id>/
   overview.md        ← what it is, "## Current features", "## Current status"
   architecture.md    ← components and how they fit together
   technical.md       ← setup, configuration, APIs, integrations
+  tasks.md           ← tasks, added by people (## To do / ## In progress / ## Blocked / ## Done)
   meetings/
     YYYY-MM-DD.md    ← meeting notes (written by hand)
 
@@ -83,6 +94,34 @@ CLAUDE.md            ← instructions Claude follows when editing this repo
 ```
 
 The dashboard card for each project shows the first paragraph of its `## Current status` section.
+
+## Tasks
+
+Each project has a **Tasks** tab with four columns (To do, In progress, Blocked, Done). Open tasks also appear on the
+dashboard. Nothing is added automatically. Tasks live in `docs/projects/<project-id>/tasks.md`:
+
+```markdown
+## To do
+- Add PDF export (abhishek)
+
+## In progress
+- Fix review gate (abhishek)
+
+## Blocked
+- Deploy to staging (rahul) — waiting for server access
+
+## Done
+- Set up CI
+```
+
+One line per task: the task, then optionally `(person)` and ` — note`.
+
+**Admins (no tools needed):** on the site, open a project's **Tasks** tab and click **Edit tasks**. GitHub's editor
+opens. To add a task, type a line under a heading; to move one, cut it and paste it under another heading. Click
+**Commit changes**, and the site updates in about a minute. Admins need a free GitHub account and must be added once
+under **repo Settings → Collaborators**. Without that, GitHub lets them propose the change for you to approve.
+
+**Developers:** type `/add-this task: …` in Claude Code, as shown above.
 
 ## Meeting notes
 

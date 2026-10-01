@@ -2,7 +2,8 @@ import { Suspense } from 'react'
 import { Link, NavLink, Outlet, useOutletContext, useParams } from 'react-router'
 import { ChevronRight, ExternalLink, FolderX } from 'lucide-react'
 import type { Project } from '../../types'
-import { getProject, meetingsFor } from '../../data'
+import { getProject, meetingsFor, tasksFor } from '../../data'
+import { isOpen } from '../../utils/tasks'
 import { EmptyState, PageSkeleton, Person, ProjectStatusBadge } from '../../components/ui'
 import { cn } from '../../utils/format'
 
@@ -27,6 +28,7 @@ export default function ProjectLayout() {
     { to: '', label: 'Overview', end: true },
     { to: 'architecture', label: 'Architecture' },
     { to: 'technical', label: 'Technical docs' },
+    { to: 'tasks', label: 'Tasks', count: tasksFor(project.id).filter(isOpen).length },
     { to: 'meetings', label: 'Meeting notes', count: meetingsFor(project.id).length },
   ]
 
