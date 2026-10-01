@@ -1,4 +1,4 @@
-import type { IssueStatus, Priority, ProjectStatus, TaskStatus } from '../../types'
+import type { ProjectStatus } from '../../types'
 import { cn } from '../../utils/format'
 
 type Tone = 'slate' | 'indigo' | 'emerald' | 'amber' | 'rose' | 'sky' | 'violet'
@@ -39,42 +39,8 @@ export const projectStatusMeta: Record<ProjectStatus, { label: string; tone: Ton
   completed: { label: 'Completed', tone: 'indigo' },
 }
 
-export const taskStatusMeta: Record<TaskStatus, { label: string; tone: Tone }> = {
-  todo: { label: 'Todo', tone: 'slate' },
-  'in-progress': { label: 'In progress', tone: 'sky' },
-  completed: { label: 'Completed', tone: 'emerald' },
-  blocked: { label: 'Blocked', tone: 'rose' },
-}
-
-export const priorityMeta: Record<Priority, { label: string; tone: Tone }> = {
-  low: { label: 'Low', tone: 'slate' },
-  medium: { label: 'Medium', tone: 'sky' },
-  high: { label: 'High', tone: 'amber' },
-  critical: { label: 'Critical', tone: 'rose' },
-}
-
-export const issueStatusMeta: Record<IssueStatus, { label: string; tone: Tone }> = {
-  open: { label: 'Open', tone: 'rose' },
-  investigating: { label: 'Investigating', tone: 'amber' },
-  resolved: { label: 'Resolved', tone: 'emerald' },
-}
-
 export const ProjectStatusBadge = ({ status }: { status: ProjectStatus }) => {
   const m = projectStatusMeta[status] ?? { label: status, tone: 'slate' as Tone }
   return <Badge tone={m.tone} dot>{m.label}</Badge>
 }
 
-export const TaskStatusBadge = ({ status }: { status: TaskStatus }) => {
-  const m = taskStatusMeta[status] ?? { label: status, tone: 'slate' as Tone }
-  return <Badge tone={m.tone} dot>{m.label}</Badge>
-}
-
-export const PriorityBadge = ({ priority }: { priority: Priority }) => {
-  const m = priorityMeta[priority] ?? { label: priority, tone: 'slate' as Tone }
-  return <Badge tone={m.tone}>{m.label}</Badge>
-}
-
-export const IssueStatusBadge = ({ status }: { status: IssueStatus }) => {
-  const m = issueStatusMeta[status] ?? { label: status, tone: 'slate' as Tone }
-  return <Badge tone={m.tone} dot>{m.label}</Badge>
-}

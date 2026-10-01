@@ -2,26 +2,10 @@
 
 One-paragraph summary of what the project is and who it is for.
 
-## Background
+## Current features
 
-Why this project exists.
-
-## Scope
-
-**In scope**
-
-- …
-
-**Out of scope**
-
-- …
+- **Feature** — what it does for the user
 
 ## Current status
 
-What is done, what is in progress, what is blocked.
-
-## Stakeholders
-
-| Role | Person |
-| --- | --- |
-| Developer / owner | … |
+What works today, what is in progress, and known gaps.

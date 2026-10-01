@@ -16,7 +16,7 @@ export default function SearchPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Search" title={q ? <>Results for “{q}”</> : 'Search'} description={q ? `${results.length} results across projects, tasks, meetings, docs and changelog.` : undefined} />
+      <PageHeader eyebrow="Search" title={q ? <>Results for “{q}”</> : 'Search'} description={q ? `${results.length} results across projects, documentation and meeting notes.` : undefined} />
 
       <div className="relative mb-6 max-w-2xl">
         <Search className="absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
@@ -54,7 +54,7 @@ export default function SearchPage() {
       )}
 
       {!q ? (
-        <EmptyState icon={Search} title="Search the documentation" description="Find projects, tasks, meeting notes, documentation sections, changelog entries and dev updates." />
+        <EmptyState icon={Search} title="Search the documentation" description="Find projects, documentation sections and meeting notes." />
       ) : !shown.length ? (
         <EmptyState icon={SearchX} title="No results" description={`Nothing matched “${q}”. Try fewer or different words.`} />
       ) : (

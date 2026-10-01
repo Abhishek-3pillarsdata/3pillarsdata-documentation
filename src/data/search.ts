@@ -1,7 +1,7 @@
-import { changelog, docs, getMember, getProject, issues, meetings, projects, tasks, updates } from '.'
+import { docs, getMember, getProject, meetings, projects } from '.'
 import { splitSections, stripInline } from '../utils/markdown'
 
-export type SearchType = 'project' | 'task' | 'meeting' | 'doc' | 'changelog' | 'update' | 'issue'
+export type SearchType = 'project' | 'doc' | 'meeting'
 
 export interface SearchItem {
   type: SearchType
@@ -10,7 +10,6 @@ export interface SearchItem {
   text: string
   /** Router path (may include ?h=<heading-id> to scroll to a section). */
   url: string
-  date?: string
 }
 
 export interface SearchResult extends SearchItem {
@@ -29,42 +28,8 @@ function buildIndex(): SearchItem[] {
       type: 'project',
       title: p.name,
       subtitle: `${p.status} · ${getMember(p.owner).name}`,
-      text: [p.description, ...p.objectives, ...p.techStack, p.key].join(' '),
+      text: [p.description, ...(p.objectives ?? []), ...p.techStack, p.key].join(' '),
       url: `/projects/${p.id}`,
-      date: p.lastUpdated,
-    })
-  }
-
-  for (const t of tasks) {
-    items.push({
-      type: 'task',
-      title: `${t.id} · ${t.title}`,
-      subtitle: `${projectName(t.projectId)} · ${t.status} · ${getMember(t.assignee).name}`,
-      text: t.description,
-      url: `/projects/${t.projectId}/tasks?task=${t.id}`,
-      date: t.updatedDate,
-    })
-  }
-
-  for (const i of issues) {
-    items.push({
-      type: 'issue',
-      title: i.title,
-      subtitle: `${projectName(i.projectId)} · ${i.status} · ${i.severity}`,
-      text: [i.id, i.description, i.resolution ?? '', ...(i.relatedTasks ?? [])].join(' '),
-      url: `/projects/${i.projectId}/issues`,
-      date: i.updatedDate,
-    })
-  }
-
-  for (const m of meetings) {
-    items.push({
-      type: 'meeting',
-      title: m.title,
-      subtitle: `${projectName(m.projectId)} · ${m.date}`,
-      text: stripInline(m.body.replace(/\|/g, ' ')),
-      url: `/projects/${m.projectId}/meetings/${m.slug}`,
-      date: m.date,
     })
   }
 
@@ -72,33 +37,21 @@ function buildIndex(): SearchItem[] {
     for (const s of splitSections(d.body)) {
       items.push({
         type: 'doc',
-        title: s.heading || docLabels[d.kind] || d.kind,
-        subtitle: `${projectName(d.projectId)} · ${docLabels[d.kind] ?? d.kind}`,
+        title: s.heading || docLabels[d.kind],
+        subtitle: `${projectName(d.projectId)} · ${docLabels[d.kind]}`,
         text: stripInline(s.text.replace(/\|/g, ' ')),
         url: `/projects/${d.projectId}${d.kind === 'overview' ? '' : `/${d.kind}`}${s.id ? `?h=${s.id}` : ''}`,
       })
     }
   }
 
-  for (const c of changelog) {
+  for (const m of meetings) {
     items.push({
-      type: 'changelog',
-      title: `${c.date}${c.title ? ` — ${c.title}` : ''}`,
-      subtitle: `${projectName(c.projectId)} · Changelog`,
-      text: c.items.map(stripInline).join(' · '),
-      url: `/projects/${c.projectId}/changelog`,
-      date: c.date,
-    })
-  }
-
-  for (const u of updates) {
-    items.push({
-      type: 'update',
-      title: u.summary,
-      subtitle: `${projectName(u.projectId)} · ${u.date} · ${getMember(u.developer).name}`,
-      text: [...u.changes, ...u.filesAffected, ...u.problems, ...u.solutions, ...u.nextSteps, ...(u.relatedTasks ?? [])].join(' · '),
-      url: `/projects/${u.projectId}/updates`,
-      date: u.date,
+      type: 'meeting',
+      title: m.title,
+      subtitle: `${projectName(m.projectId)} · Meeting ${m.date}`,
+      text: stripInline(m.body.replace(/\|/g, ' ')),
+      url: `/projects/${m.projectId}/meetings/${m.slug}`,
     })
   }
 
@@ -151,15 +104,11 @@ export function search(query: string, limit = 50): SearchResult[] {
     const { _title, _text, _sub, ...rest } = item
     results.push({ ...rest, score, snippet: makeSnippet(item.text, terms[0]) })
   }
-  return results.sort((a, b) => b.score - a.score || (b.date ?? '').localeCompare(a.date ?? '')).slice(0, limit)
+  return results.sort((a, b) => b.score - a.score).slice(0, limit)
 }
 
 export const searchTypeLabels: Record<SearchType, string> = {
   project: 'Project',
-  task: 'Task',
-  meeting: 'Meeting',
   doc: 'Documentation',
-  changelog: 'Changelog',
-  update: 'Dev update',
-  issue: 'Issue',
+  meeting: 'Meeting',
 }

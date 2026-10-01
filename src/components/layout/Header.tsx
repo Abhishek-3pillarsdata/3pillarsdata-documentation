@@ -16,7 +16,7 @@ export function Header({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
         className="focus-ring flex h-9 w-full max-w-md items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500 transition hover:border-slate-300 hover:bg-white dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
       >
         <Search className="size-4" />
-        <span className="flex-1 text-left">Search projects, tasks, docs…</span>
+        <span className="flex-1 text-left">Search projects, docs, meetings…</span>
         <kbd className="hidden rounded border border-slate-200 bg-white px-1.5 py-0.5 font-sans text-[11px] font-medium text-slate-500 sm:inline dark:border-slate-700 dark:bg-slate-800">
           {isMac ? '⌘' : 'Ctrl'} K
         </kbd>

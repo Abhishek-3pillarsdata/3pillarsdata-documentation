@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
 import { Link, NavLink, Outlet, useOutletContext, useParams } from 'react-router'
-import { CalendarClock, ChevronRight, ExternalLink, FolderX, Target } from 'lucide-react'
+import { ChevronRight, ExternalLink, FolderX } from 'lucide-react'
 import type { Project } from '../../types'
-import { changelogFor, getProject, issuesFor, meetingsFor, tasksFor, updatesFor } from '../../data'
-import { EmptyState, PageSkeleton, Person, ProgressBar, ProjectStatusBadge } from '../../components/ui'
-import { cn, formatDate, relativeDate } from '../../utils/format'
+import { getProject, meetingsFor } from '../../data'
+import { EmptyState, PageSkeleton, Person, ProjectStatusBadge } from '../../components/ui'
+import { cn } from '../../utils/format'
 
 export const useProject = () => useOutletContext<Project>()
 
@@ -23,16 +23,11 @@ export default function ProjectLayout() {
     )
   }
 
-  const openIssues = issuesFor(project.id).filter((i) => i.status !== 'resolved').length
   const tabs = [
     { to: '', label: 'Overview', end: true },
     { to: 'architecture', label: 'Architecture' },
     { to: 'technical', label: 'Technical docs' },
-    { to: 'tasks', label: 'Tasks', count: tasksFor(project.id).filter((t) => t.status !== 'completed').length },
     { to: 'meetings', label: 'Meeting notes', count: meetingsFor(project.id).length },
-    { to: 'updates', label: 'Dev updates', count: updatesFor(project.id).length },
-    { to: 'changelog', label: 'Changelog', count: changelogFor(project.id).length },
-    { to: 'issues', label: 'Issues / Blockers', count: openIssues, alert: openIssues > 0 },
   ]
 
   return (
@@ -54,34 +49,19 @@ export default function ProjectLayout() {
               </div>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl dark:text-white">{project.name}</h1>
               <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{project.description}</p>
-              {project.repository && (
-                <a href={project.repository} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:underline dark:text-indigo-400">
-                  Repository <ExternalLink className="size-3" />
-                </a>
-              )}
             </div>
-            <dl className="grid shrink-0 grid-cols-2 gap-x-8 gap-y-4 text-sm lg:w-80">
-              <div className="col-span-2">
-                <dt className="mb-1.5 flex justify-between text-xs font-medium text-slate-500">
-                  Progress <span className="font-semibold tabular-nums text-slate-900 dark:text-white">{project.progress}%</span>
-                </dt>
-                <dd><ProgressBar value={project.progress} /></dd>
-              </div>
+            <dl className="flex shrink-0 flex-col gap-4 text-sm lg:w-64">
               <div>
                 <dt className="mb-1 text-xs font-medium text-slate-500">Developer</dt>
-                <dd><Person id={project.owner} /></dd>
+                <dd><Person id={project.owner} showRole /></dd>
               </div>
-              <div>
-                <dt className="mb-1 text-xs font-medium text-slate-500">Last updated</dt>
-                <dd className="flex items-center gap-1.5 font-medium text-slate-800 dark:text-slate-200" title={formatDate(project.lastUpdated)}>
-                  <CalendarClock className="size-4 text-slate-400" /> {relativeDate(project.lastUpdated)}
-                </dd>
-              </div>
-              {project.targetDate && (
-                <div className="col-span-2">
-                  <dt className="mb-1 text-xs font-medium text-slate-500">Target date</dt>
-                  <dd className="flex items-center gap-1.5 font-medium text-slate-800 dark:text-slate-200">
-                    <Target className="size-4 text-slate-400" /> {formatDate(project.targetDate)}
+              {project.repository && (
+                <div>
+                  <dt className="mb-1 text-xs font-medium text-slate-500">Repository</dt>
+                  <dd>
+                    <a href={project.repository.replace(/\.git$/, '')} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 font-medium text-indigo-600 hover:underline dark:text-indigo-400">
+                      Open on GitHub <ExternalLink className="size-3" />
+                    </a>
                   </dd>
                 </div>
               )}
@@ -106,14 +86,7 @@ export default function ProjectLayout() {
             >
               {t.label}
               {!!t.count && (
-                <span
-                  className={cn(
-                    'rounded-full px-1.5 text-[11px] font-semibold tabular-nums',
-                    t.alert ? 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
-                  )}
-                >
-                  {t.count}
-                </span>
+                <span className="rounded-full bg-slate-100 px-1.5 text-[11px] font-semibold tabular-nums text-slate-600 dark:bg-slate-800 dark:text-slate-400">{t.count}</span>
               )}
             </NavLink>
           ))}

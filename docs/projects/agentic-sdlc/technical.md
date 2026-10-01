@@ -120,7 +120,7 @@ HTML is the document and the PDF is a convenience on top of it.
 python -m pytest tests/ semantic/generated/test_invariants.py -q
 ```
 
-**630 tests pass** as of 2026-09-30, across 36 test files. The suite needs no
+**630 tests pass** across 36 test files. The suite needs no
 API key and no network: agent behaviour is exercised through a `FakeClient`, and
 the only real subprocess it starts is `sys.executable -c "pass"`.
 

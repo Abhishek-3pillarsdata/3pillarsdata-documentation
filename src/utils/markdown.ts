@@ -1,5 +1,5 @@
 import GithubSlugger from 'github-slugger'
-import type { ActionItem, ChangelogEntry } from '../types'
+import type { ActionItem } from '../types'
 
 /**
  * Tiny frontmatter parser. Supports the subset used in this repo:
@@ -86,27 +86,6 @@ export function getActionItems(lines: string[]): ActionItem[] {
       }
     })
     .filter((a) => a.action)
-}
-
-/**
- * Parses changelog.md. Format:
- *   ## 2026-09-30 — Optional title
- *   - item
- */
-export function parseChangelog(projectId: string, raw: string): ChangelogEntry[] {
-  const entries: ChangelogEntry[] = []
-  let current: ChangelogEntry | null = null
-  for (const line of raw.replace(/\r\n/g, '\n').split('\n')) {
-    const h = /^##\s+(\d{4}-\d{2}-\d{2})\s*(?:[—–-]+\s*(.+))?$/.exec(line.trim())
-    if (h) {
-      current = { projectId, date: h[1], title: h[2]?.trim(), items: [] }
-      entries.push(current)
-      continue
-    }
-    const bullet = /^\s*[-*+]\s+(.*)$/.exec(line)
-    if (current && bullet) current.items.push(bullet[1].trim())
-  }
-  return entries.sort((a, b) => b.date.localeCompare(a.date))
 }
 
 /** Strips inline markdown (bold, code, links) for plain-text previews and search. */

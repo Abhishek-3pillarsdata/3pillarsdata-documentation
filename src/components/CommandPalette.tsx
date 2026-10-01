@@ -59,7 +59,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Search projects, tasks, meetings, docs, changelog…"
+            placeholder="Search projects, docs, meetings…"
             className="h-14 flex-1 bg-transparent text-base text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
           />
           <kbd className="rounded border border-slate-200 px-1.5 py-0.5 text-[11px] text-slate-500 dark:border-slate-700">Esc</kbd>
@@ -68,7 +68,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
         {query.trim() === '' ? (
           <div className="px-5 py-10 text-center text-sm text-slate-500">
             Type to search across all projects.
-            <div className="mt-2 text-xs text-slate-400">Search by keyword, task id, person or date.</div>
+            <div className="mt-2 text-xs text-slate-400">Search by feature, technology, person or project name.</div>
           </div>
         ) : results.length === 0 ? (
           <div className="px-5 py-10 text-center text-sm text-slate-500">

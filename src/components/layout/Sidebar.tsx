@@ -1,17 +1,13 @@
 import { NavLink } from 'react-router'
-import { AlertTriangle, BookOpen, CalendarDays, FolderKanban, History, LayoutDashboard, ListChecks, Users, Workflow, X } from 'lucide-react'
-import { issues, projects } from '../../data'
+import { BookOpen, CalendarDays, FolderKanban, LayoutDashboard, Users, X } from 'lucide-react'
+import { projects } from '../../data'
 import { projectStatusMeta } from '../ui/Badge'
 import { cn } from '../../utils/format'
 
 const nav = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/projects', label: 'Projects', icon: FolderKanban, end: true },
-  { to: '/tasks', label: 'Tasks', icon: ListChecks },
   { to: '/meetings', label: 'Meeting notes', icon: CalendarDays },
-  { to: '/updates', label: 'Dev updates', icon: Workflow },
-  { to: '/changelog', label: 'Changelog', icon: History },
-  { to: '/issues', label: 'Issues & blockers', icon: AlertTriangle, count: issues.filter((i) => i.status !== 'resolved').length },
   { to: '/team', label: 'Team', icon: Users },
 ]
 
@@ -60,13 +56,10 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
 
         <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
           <div className="space-y-0.5">
-            {nav.map(({ to, label, icon: Icon, end, count }) => (
+            {nav.map(({ to, label, icon: Icon, end }) => (
               <NavLink key={to} to={to} end={end} className={linkCls} onClick={onClose}>
                 <Icon className="size-4 shrink-0 opacity-80" />
                 <span className="flex-1">{label}</span>
-                {!!count && (
-                  <span className="rounded-full bg-rose-100 px-1.5 text-[11px] font-semibold text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">{count}</span>
-                )}
               </NavLink>
             ))}
           </div>
@@ -78,7 +71,6 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
                 <NavLink key={p.id} to={`/projects/${p.id}`} className={linkCls} onClick={onClose}>
                   <span className={cn('size-2 shrink-0 rounded-full', dotColor[projectStatusMeta[p.status]?.tone] ?? 'bg-slate-400')} />
                   <span className="flex-1 truncate">{p.name}</span>
-                  <span className="text-[11px] tabular-nums text-slate-400">{p.progress}%</span>
                 </NavLink>
               ))}
               {!projects.length && <p className="px-3 text-xs text-slate-400">No projects yet</p>}

@@ -12,18 +12,9 @@ const ProjectOverview = lazy(() => import('./pages/project/ProjectOverview'))
 const ProjectDoc = lazy(() => import('./pages/project/ProjectDoc'))
 const MeetingDetail = lazy(() => import('./pages/project/MeetingDetail'))
 const global = () => import('./pages/GlobalPages')
-const TasksPage = lazy(() => global().then((m) => ({ default: m.TasksPage })))
 const MeetingsPage = lazy(() => global().then((m) => ({ default: m.MeetingsPage })))
-const UpdatesPage = lazy(() => global().then((m) => ({ default: m.UpdatesPage })))
-const ChangelogPage = lazy(() => global().then((m) => ({ default: m.ChangelogPage })))
-const IssuesPage = lazy(() => global().then((m) => ({ default: m.IssuesPage })))
 const NotFoundPage = lazy(() => global().then((m) => ({ default: m.NotFoundPage })))
-const sections = () => import('./pages/project/ProjectSections')
-const ProjectTasks = lazy(() => sections().then((m) => ({ default: m.ProjectTasks })))
-const ProjectMeetings = lazy(() => sections().then((m) => ({ default: m.ProjectMeetings })))
-const ProjectUpdates = lazy(() => sections().then((m) => ({ default: m.ProjectUpdates })))
-const ProjectChangelog = lazy(() => sections().then((m) => ({ default: m.ProjectChangelog })))
-const ProjectIssues = lazy(() => sections().then((m) => ({ default: m.ProjectIssues })))
+const ProjectMeetings = lazy(() => import('./pages/project/ProjectSections').then((m) => ({ default: m.ProjectMeetings })))
 
 export default function App() {
   return (
@@ -36,18 +27,10 @@ export default function App() {
             <Route index element={<ProjectOverview />} />
             <Route path="architecture" element={<ProjectDoc kind="architecture" />} />
             <Route path="technical" element={<ProjectDoc kind="technical" />} />
-            <Route path="tasks" element={<ProjectTasks />} />
             <Route path="meetings" element={<ProjectMeetings />} />
             <Route path="meetings/:meetingId" element={<MeetingDetail />} />
-            <Route path="updates" element={<ProjectUpdates />} />
-            <Route path="changelog" element={<ProjectChangelog />} />
-            <Route path="issues" element={<ProjectIssues />} />
           </Route>
-          <Route path="tasks" element={<TasksPage />} />
           <Route path="meetings" element={<MeetingsPage />} />
-          <Route path="updates" element={<UpdatesPage />} />
-          <Route path="changelog" element={<ChangelogPage />} />
-          <Route path="issues" element={<IssuesPage />} />
           <Route path="team" element={<TeamPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="*" element={<NotFoundPage />} />

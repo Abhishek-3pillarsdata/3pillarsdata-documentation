@@ -3,7 +3,7 @@ import { CalendarDays, CheckCircle2, ChevronRight, Gavel, ListTodo } from 'lucid
 import type { Meeting } from '../types'
 import { getProject } from '../data'
 import { AvatarStack, Badge, EmptyState } from './ui'
-import { formatDate, parseDate, relativeDate } from '../utils/format'
+import { formatDate, parseDate } from '../utils/format'
 
 export function MeetingList({ meetings, showProject }: { meetings: Meeting[]; showProject?: boolean }) {
   if (!meetings.length) {
@@ -38,7 +38,7 @@ export function MeetingList({ meetings, showProject }: { meetings: Meeting[]; sh
                 <div className="min-w-0">
                   <h3 className="truncate font-semibold text-slate-900 dark:text-white">{m.title}</h3>
                   <p className="text-xs text-slate-500">
-                    {formatDate(m.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · {relativeDate(m.date)}
+                    {formatDate(m.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                   </p>
                 </div>
                 <ChevronRight className="mt-1 size-4 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-indigo-500" />

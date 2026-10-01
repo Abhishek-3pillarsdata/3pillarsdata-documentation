@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react'
 import { getMember } from '../../data'
 import { cn, initials } from '../../utils/format'
 
-export { Badge, ProjectStatusBadge, TaskStatusBadge, PriorityBadge, IssueStatusBadge } from './Badge'
+export { Badge, ProjectStatusBadge } from './Badge'
 
 export function Card({ className, children, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
   return (
@@ -97,22 +97,6 @@ export function AvatarStack({ ids, max = 4 }: { ids: string[]; max?: number }) {
         </span>
       )}
     </span>
-  )
-}
-
-export function ProgressBar({ value, size = 'md', className }: { value: number; size?: 'sm' | 'md'; className?: string }) {
-  const v = Math.max(0, Math.min(100, value))
-  const color = v >= 100 ? 'bg-emerald-500' : v >= 60 ? 'bg-indigo-500' : v >= 30 ? 'bg-sky-500' : 'bg-amber-500'
-  return (
-    <div
-      role="progressbar"
-      aria-valuenow={v}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      className={cn('w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800', size === 'sm' ? 'h-1.5' : 'h-2', className)}
-    >
-      <div className={cn('h-full rounded-full transition-all duration-500', color)} style={{ width: `${v}%` }} />
-    </div>
   )
 }
 

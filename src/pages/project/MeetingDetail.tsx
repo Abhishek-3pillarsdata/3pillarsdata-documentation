@@ -4,7 +4,7 @@ import { getMeeting, meetingsFor } from '../../data'
 import { Card, CardHeader, EmptyState, Person } from '../../components/ui'
 import { Markdown } from '../../components/Markdown'
 import { useProject } from './ProjectLayout'
-import { cn, formatDate, daysSince } from '../../utils/format'
+import { cn, formatDate } from '../../utils/format'
 
 export default function MeetingDetail() {
   const project = useProject()
@@ -87,7 +87,6 @@ export default function MeetingDetail() {
               <CardHeader title="Action items" icon={ListTodo} />
               <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                 {meeting.actionItems.map((a, i) => {
-                  const overdue = !a.done && /^\d{4}-\d{2}-\d{2}$/.test(a.deadline) && daysSince(a.deadline) > 0
                   return (
                     <li key={i} className="flex gap-3 px-5 py-3">
                       {a.done ? <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" /> : <Circle className="mt-0.5 size-4 shrink-0 text-slate-300 dark:text-slate-600" />}
@@ -96,10 +95,7 @@ export default function MeetingDetail() {
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
                           <Person id={a.owner} />
                           {a.deadline && (
-                            <span className={cn(overdue && 'font-medium text-rose-600 dark:text-rose-400')}>
-                              Due {/^\d{4}-\d{2}-\d{2}$/.test(a.deadline) ? formatDate(a.deadline) : a.deadline}
-                              {overdue && ' · overdue'}
-                            </span>
+                            <span>Due {/^\d{4}-\d{2}-\d{2}$/.test(a.deadline) ? formatDate(a.deadline) : a.deadline}</span>
                           )}
                         </div>
                       </div>

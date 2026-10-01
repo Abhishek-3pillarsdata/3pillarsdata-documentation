@@ -1,54 +1,34 @@
 /**
  * Loads all documentation content at build time.
  *
- *   /data/*.json                         → structured data
- *   /docs/projects/<id>/*.md             → overview / architecture / technical / changelog
- *   /docs/projects/<id>/meetings/*.md    → meeting notes
+ *   /data/projects.json, /data/team.json                     → structured data
+ *   /docs/projects/<id>/{overview,architecture,technical}.md → project pages
+ *   /docs/projects/<id>/meetings/*.md                        → meeting notes
  *
  * There is nothing to register here when adding content: new files matching
  * these globs are picked up automatically on the next build.
  */
 import projectsJson from '../../data/projects.json'
-import tasksJson from '../../data/tasks.json'
 import teamJson from '../../data/team.json'
-import updatesJson from '../../data/updates.json'
-import issuesJson from '../../data/issues.json'
-import type {
-  ChangelogEntry,
-  DevelopmentUpdate,
-  DocKind,
-  Issue,
-  Meeting,
-  Project,
-  ProjectDoc,
-  Task,
-  TeamMember,
-} from '../types'
-import { getActionItems, getBullets, getSection, parseChangelog, parseFrontmatter, stripInline } from '../utils/markdown'
+import type { DocKind, Meeting, Project, ProjectDoc, TeamMember } from '../types'
+import { getActionItems, getBullets, getSection, parseFrontmatter, stripInline } from '../utils/markdown'
 
 const docFiles = import.meta.glob('/docs/projects/*/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
 const meetingFiles = import.meta.glob('/docs/projects/*/meetings/*.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>
 
-const byDateDesc = <T>(key: (t: T) => string) => (a: T, b: T) => key(b).localeCompare(key(a))
+const docKinds: DocKind[] = ['overview', 'architecture', 'technical']
 
 export const team = teamJson as TeamMember[]
-export const projects = (projectsJson as unknown as Project[]).slice().sort(byDateDesc((p) => p.lastUpdated))
-export const tasks = tasksJson as unknown as Task[]
-export const issues = (issuesJson as unknown as Issue[]).slice().sort(byDateDesc((i) => i.updatedDate))
-export const updates = (updatesJson as unknown as DevelopmentUpdate[]).slice().sort(byDateDesc((u) => u.date))
+export const projects = (projectsJson as unknown as Project[]).slice().sort((a, b) => a.name.localeCompare(b.name))
 
 // ── Markdown docs ────────────────────────────────────────────────────────────
 export const docs: ProjectDoc[] = []
-export const changelog: ChangelogEntry[] = []
 
 for (const [path, raw] of Object.entries(docFiles)) {
   const m = /\/docs\/projects\/([^/]+)\/([^/]+)\.md$/.exec(path)
-  if (!m) continue
-  const [, projectId, name] = m
-  if (name === 'changelog') changelog.push(...parseChangelog(projectId, raw))
-  else docs.push({ projectId, kind: name as DocKind, body: parseFrontmatter(raw).body })
+  if (!m || !docKinds.includes(m[2] as DocKind)) continue
+  docs.push({ projectId: m[1], kind: m[2] as DocKind, body: parseFrontmatter(raw).body })
 }
-changelog.sort(byDateDesc((c) => c.date))
 
 // ── Meetings ─────────────────────────────────────────────────────────────────
 export const meetings: Meeting[] = Object.entries(meetingFiles)
@@ -70,12 +50,13 @@ export const meetings: Meeting[] = Object.entries(meetingFiles)
       body,
     }
   })
-  .sort(byDateDesc((m) => m.date))
+  .sort((a, b) => b.date.localeCompare(a.date))
 
 // ── Lookups ──────────────────────────────────────────────────────────────────
 export const getProject = (id: string) => projects.find((p) => p.id === id)
 export const getDoc = (projectId: string, kind: DocKind) => docs.find((d) => d.projectId === projectId && d.kind === kind)
 export const getMeeting = (projectId: string, slug: string) => meetings.find((m) => m.projectId === projectId && m.slug === slug)
+export const meetingsFor = (projectId: string) => meetings.filter((m) => m.projectId === projectId)
 
 /** Resolves a team id to a member; free-text names produce a placeholder member. */
 export function getMember(idOrName: string): TeamMember {
@@ -85,8 +66,14 @@ export function getMember(idOrName: string): TeamMember {
   )
 }
 
-export const tasksFor = (projectId: string) => tasks.filter((t) => t.projectId === projectId)
-export const meetingsFor = (projectId: string) => meetings.filter((m) => m.projectId === projectId)
-export const updatesFor = (projectId: string) => updates.filter((u) => u.projectId === projectId)
-export const changelogFor = (projectId: string) => changelog.filter((c) => c.projectId === projectId)
-export const issuesFor = (projectId: string) => issues.filter((i) => i.projectId === projectId)
+/** First paragraph of the "## Current status" section of overview.md, as plain text. */
+export function statusSummary(projectId: string): string | undefined {
+  const body = getDoc(projectId, 'overview')?.body
+  if (!body) return undefined
+  const paragraph = getSection(body, 'current status')
+    .join('\n')
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .find((p) => p && !p.startsWith('#'))
+  return paragraph ? stripInline(paragraph.replace(/^\s*[-*+]\s+/gm, '').replace(/\s+/g, ' ')) : undefined
+}

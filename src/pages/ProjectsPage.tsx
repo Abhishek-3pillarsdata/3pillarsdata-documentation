@@ -14,7 +14,7 @@ export default function ProjectsPage() {
       <PageHeader
         eyebrow="Projects"
         title="All projects"
-        description="Each project has its own overview, architecture, technical docs, tasks, meeting notes, development updates and changelog."
+        description="Each project has an overview with its current status, plus architecture, technical docs and meeting notes."
         actions={
           <Segmented
             value={filter}

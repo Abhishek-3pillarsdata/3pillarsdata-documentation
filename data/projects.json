@@ -11,7 +11,6 @@
       "Have the agents verify their own work rather than handing over code nobody has run"
     ],
     "status": "active",
-    "progress": 0,
     "owner": "abhishek",
     "techStack": [
       "Python 3.10+",
@@ -25,8 +24,6 @@
       "Docker",
       "GitHub REST API"
     ],
-    "startDate": "2026-06-23",
-    "lastUpdated": "2026-09-30",
     "repository": "https://github.com/devops-internal-3pillarsdata/agentic-sdlc.git"
   }
 ]
